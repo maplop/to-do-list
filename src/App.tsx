@@ -1,16 +1,32 @@
-import { Fragment } from 'react/jsx-runtime'
 import './App.css'
-import { Box, Container, CssBaseline } from '@mui/material'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Box, Container, CssBaseline } from '@mui/material';
+import PrivateRoutes from './routes/PrivateRoutes';
+import PublicRoutes from './routes/PublicRoutes';
+
+type Status = 'checking' | 'authenticated' | 'no-authenticated'
+
+const status: Status = 'authenticated'
 
 function App() {
   return (
-    <Fragment>
+    <BrowserRouter>
       <CssBaseline />
-      <Container maxWidth="md">
-        <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} />
+      <Container maxWidth="sm">
+        <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} >
+          <Routes>
+            {
+              status === 'no-authenticated'
+                ? <Route path="/*" element={<PrivateRoutes />} />
+                : <Route path="/*" element={<PublicRoutes />} />
+            }
+            <Route path='*' element={<Navigate to='/login' replace />} />
+          </Routes>
+        </Box>
       </Container>
-    </Fragment>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
+
