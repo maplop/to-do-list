@@ -12,11 +12,11 @@ function App() {
   return (
     <BrowserRouter>
       <CssBaseline />
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} >
           <Routes>
             {
-              status === 'no-authenticated'
+              status === 'authenticated'
                 ? <Route path="/*" element={<PrivateRoutes />} />
                 : <Route path="/*" element={<PublicRoutes />} />
             }
