@@ -1,12 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import Login from '../pages/Login'
-import Signup from '../pages/Signup'
+import LoginPage from '../pages/LoginPage'
+import SignupPage from '../pages/SignupPage'
+
 
 const PublicRoutes = () => {
   return (
     <Routes>
-      <Route path='/login' index element={<Login />} />
-      <Route path='/signup' element={<Signup />} />
+      <Route path='/login' index element={<LoginPage />} />
+      <Route path='/signup' element={<SignupPage />} />
       <Route path='*' element={<Navigate to='/login' replace />} />
     </Routes>
   )

@@ -1,29 +1,22 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { Box, Container, CssBaseline } from '@mui/material';
-import PrivateRoutes from './routes/PrivateRoutes';
-import PublicRoutes from './routes/PublicRoutes';
-
-type Status = 'checking' | 'authenticated' | 'no-authenticated'
-
-const status: Status = 'authenticated'
+import MainRoutes from './routes/MainRoutes';
+import GlobalProvider from './providers/GlobalProvider';
 
 function App() {
+
+
   return (
     <BrowserRouter>
       <CssBaseline />
-      <Container maxWidth="md">
-        <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} >
-          <Routes>
-            {
-              status === 'authenticated'
-                ? <Route path="/*" element={<PrivateRoutes />} />
-                : <Route path="/*" element={<PublicRoutes />} />
-            }
-            <Route path='*' element={<Navigate to='/login' replace />} />
-          </Routes>
-        </Box>
-      </Container>
+      <GlobalProvider>
+        <Container maxWidth="md">
+          <Box sx={{ height: 'calc(100vh - 4rem)' }}>
+            <MainRoutes />
+          </Box>
+        </Container>
+      </GlobalProvider>
     </BrowserRouter>
   );
 }
