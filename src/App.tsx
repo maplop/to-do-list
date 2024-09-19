@@ -1,16 +1,25 @@
-import { Fragment } from 'react/jsx-runtime'
 import './App.css'
-import { Box, Container, CssBaseline } from '@mui/material'
+import { BrowserRouter } from 'react-router-dom';
+import { Box, Container, CssBaseline } from '@mui/material';
+import MainRoutes from './routes/MainRoutes';
+import GlobalProvider from './providers/GlobalProvider';
 
 function App() {
+
+
   return (
-    <Fragment>
+    <BrowserRouter>
       <CssBaseline />
-      <Container maxWidth="md">
-        <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} />
-      </Container>
-    </Fragment>
-  )
+      <GlobalProvider>
+        <Container maxWidth="md">
+          <Box sx={{ height: 'calc(100vh - 4rem)' }}>
+            <MainRoutes />
+          </Box>
+        </Container>
+      </GlobalProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
+
