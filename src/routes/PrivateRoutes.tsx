@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from '../layout/Layout'
-import Notes from '../pages/Notes'
+import Notes from '../pages/NotesPage'
 import Profile from '../pages/Profile'
 import Categories from '../pages/Categories'
 
