@@ -3,8 +3,11 @@ import AddIcon from '@mui/icons-material/Add';
 import PageTitle from "../common/PageTitle"
 import Note from "./Note";
 import Grid from '@mui/material/Grid2';
+import { useState } from "react";
+import GenericModal from "../common/modal/GenericModal";
 
 const NotesView = () => {
+  const [openModalNewNote, setOpenModalNewNote] = useState<boolean>(false)
   return (
     <Stack spacing={2}>
       <Stack
@@ -16,7 +19,7 @@ const NotesView = () => {
         <PageTitle title="My Notes" />
         <Box>
           <Tooltip title="Add Note" placement="left">
-            <IconBtn>
+            <IconBtn onClick={() => setOpenModalNewNote(true)}>
               <AddIcon />
             </IconBtn>
           </Tooltip>
@@ -37,10 +40,8 @@ const NotesView = () => {
         <Grid size={6}>
           <Note />
         </Grid>
-        <Grid size={6}>
-          <Note />
-        </Grid>
       </Grid>
+      {openModalNewNote && <GenericModal open={openModalNewNote} handleClose={() => setOpenModalNewNote(false)} ><Box>Hello Modal new note</Box></GenericModal>}
     </Stack>
   )
 }
