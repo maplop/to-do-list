@@ -10,7 +10,7 @@ const Layout = () => {
         <Menu />
       </Grid>
       <Grid size={8} sx={{ height: "calc(100vh - 4rem)" }}>
-        <Paper elevation={2} sx={{ height: '100%' }}>
+        <Paper elevation={2} sx={{ height: '100%', p: 3, overflowY: 'auto' }}>
           <Outlet />
         </Paper>
       </Grid>

@@ -36,7 +36,7 @@ const Menu = () => {
     <Paper elevation={2}>
       <Stack sx={{ width: 320, maxWidth: '100%' }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: 50 }}>
-          <Typography variant="h5" color="primary" sx={{ fontFamily: 'Pacifico, cursive', fontSize: 28, fontWeight: 700 }}>DoneIt</Typography>
+          <Typography variant="h5" color="primary" sx={{ fontSize: 28, fontWeight: 700 }}>To Do List</Typography>
         </Box>
         <Divider />
         <MenuList>

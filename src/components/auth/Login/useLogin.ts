@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../hooks/useNotification";
-import { User } from "../../../context/AuthContext";
+import { UserType } from "../../../types/types";
+import { lsKeys } from "../../../utils/lskeys";
 
 export const useLogin = () => {
   const { login } = useAuth();
@@ -31,16 +32,15 @@ export const useLogin = () => {
   const handleSubmit = () => {
     const { user, password } = formValues;
     if (user && password) {
-      const storedUsers = localStorage.getItem("users");
+      const storedUsers = localStorage.getItem(lsKeys.USERS);
       if (storedUsers) {
-        const users: User[] = JSON.parse(storedUsers);
+        const users: UserType[] = JSON.parse(storedUsers);
         const foundUser = users.find(
           (u) => u.user === user && u.password === password
         );
 
         if (foundUser) {
           login(user, password);
-          notify("success", "You have successfully logged in");
           navigate("/");
         } else {
           notify("error", "Invalid credentials. Please try again.");
