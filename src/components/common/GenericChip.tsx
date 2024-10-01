@@ -1,38 +1,45 @@
 import { Chip, styled } from "@mui/material";
-import CategoryIcon from '@mui/icons-material/Category';
-import { blue } from "@mui/material/colors";
+import { getCategoryDetails } from "../../data/categories";
+import { ColorPaletteType } from "../../types/types";
 
+interface GenericChipProps {
+  category: string;
+  sizeChip?: "large" | "small"
+}
 
-const GenericChip = () => {
+const GenericChip = ({ category, sizeChip = "small" }: GenericChipProps) => {
+
+  const { color: categoryColor, icon: CategoryIcon } = getCategoryDetails(category)
+
   return (
     <ChipCategory
-      icon={<CategoryIcon />}
-      label={"Category"}
+      icon={< CategoryIcon />}
+      label={category}
       size="small"
+      categoryColor={categoryColor}
+      sizeChip={sizeChip}
     />
-  )
-}
-export default GenericChip
+  );
+};
+export default GenericChip;
 
-const ChipCategory = styled(Chip)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
+const ChipCategory = styled(Chip)<{ categoryColor: ColorPaletteType, sizeChip: "large" | "small" }>(({ categoryColor, sizeChip }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
   padding: 5,
-  border: `1px solid ${theme.palette.primary.main}`,
-  background: blue[50],
-  color: theme.palette.primary.main,
+  backgroundColor: categoryColor[50],
+  border: `1px solid ${categoryColor[700]}`,
 
-  '.MuiChip-label': {
-    fontSize: 10,
-    fontWeight: 700
+  ".MuiChip-label": {
+    fontSize: sizeChip === "small" ? 10 : 12,
+    fontWeight: 700,
+    color: categoryColor[700],
   },
 
-  '.MuiChip-icon': {
-    width: 12,
-    height: 'auto',
-    color: theme.palette.primary.main
-  }
-
-
-}))
+  ".MuiChip-icon": {
+    width: sizeChip === 'small' ? 14 : 16,
+    height: "auto",
+    color: categoryColor[700],
+  },
+}));

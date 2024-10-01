@@ -1,13 +1,27 @@
-import { Box, Stack, IconButton, styled, Tooltip } from "@mui/material"
+import { Box, Stack, IconButton, styled, Tooltip, Typography } from "@mui/material"
 import AddIcon from '@mui/icons-material/Add';
 import PageTitle from "../common/PageTitle"
-import Note from "./Note";
+import Note from "./single-note/Note";
 import Grid from '@mui/material/Grid2';
-import { useState } from "react";
 import GenericModal from "../common/modal/GenericModal";
+import AddNote from "./add-note/AddNote";
+import useNotesView from "./useNotesView";
+import { grey } from "@mui/material/colors";
 
 const NotesView = () => {
-  const [openModalNewNote, setOpenModalNewNote] = useState<boolean>(false)
+  const {
+    openModalNewNote,
+    setOpenModalNewNote,
+    notes,
+    isLoading,
+    category,
+    note,
+    handleCategoryChange,
+    handleInputChange,
+    handleSubmit,
+    handleDeleteNote,
+  } = useNotesView()
+
   return (
     <Stack spacing={2}>
       <Stack
@@ -24,25 +38,44 @@ const NotesView = () => {
             </IconBtn>
           </Tooltip>
         </Box>
-
-
       </Stack>
-      <Grid container spacing={1}>
-        <Grid size={6}>
-          <Note />
+      {isLoading ? (
+        <>Loading...</>
+      ) : (
+        <Grid container spacing={1}>
+          {notes.length > 0 ? (
+            notes.map((note) => (
+              <Grid size={6} key={note.id}>
+                <Note note={note} handleDeleteNote={handleDeleteNote} />
+              </Grid>
+            ))
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: 200,
+              }}
+            >
+              <Typography variant="h6" color={grey[400]}>No notes to show :(</Typography>
+            </Box>
+          )}
         </Grid>
-        <Grid size={6}>
-          <Note />
-        </Grid>
-        <Grid size={6}>
-          <Note />
-        </Grid>
-        <Grid size={6}>
-          <Note />
-        </Grid>
-      </Grid>
-      {openModalNewNote && <GenericModal open={openModalNewNote} handleClose={() => setOpenModalNewNote(false)} ><Box>Hello Modal new note</Box></GenericModal>}
-    </Stack>
+      )}
+
+      {openModalNewNote &&
+        <GenericModal open={openModalNewNote} handleClose={() => setOpenModalNewNote(false)} >
+          <AddNote
+            category={category}
+            note={note}
+            handleCategoryChange={handleCategoryChange}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            handleClose={() => setOpenModalNewNote(false)} />
+        </GenericModal>}
+    </Stack >
   )
 }
 export default NotesView
@@ -53,5 +86,4 @@ const IconBtn = styled(IconButton)(({ theme }) => ({
   ':hover': {
     backgroundColor: theme.palette.primary.dark,
   }
-
 }))

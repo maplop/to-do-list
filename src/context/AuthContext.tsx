@@ -1,17 +1,10 @@
 import { createContext } from "react";
-
-export interface User {
-  name: string,
-  lastName: string,
-  age: number,
-  user: string,
-  password: string
-}
+import { UserType } from "../types/types";
 
 interface AuthContextType {
-  user: User | null;
+  user: UserType | null;
   isAuthenticated: boolean;
-  signup: (user: User) => void
+  signup: (user: UserType) => void
   login: (username: string, password: string) => void;
   logout: () => void;
 }

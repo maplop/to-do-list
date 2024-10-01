@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "../../../hooks/useAuth";
-import { User } from "../../../context/AuthContext";
+import { UserType } from "../../../types/types";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../hooks/useNotification";
+import { lsKeys } from "../../../utils/lskeys";
 
 export const useSignup = () => {
   const { signup } = useAuth();
@@ -16,7 +17,7 @@ export const useSignup = () => {
     setPasswordVisibility(!passwordVisibility);
   };
 
-  const [formValues, setFormValues] = useState<User>({
+  const [formValues, setFormValues] = useState<UserType>({
     name: "",
     lastName: "",
     age: 18,
@@ -35,10 +36,10 @@ export const useSignup = () => {
   const handleSubmit = () => {
     const { name, lastName, age, user, password } = formValues;
     if (name && user && password) {
-      const storedUsers = localStorage.getItem("users");
+      const storedUsers = localStorage.getItem(lsKeys.USERS);
 
       if (storedUsers) {
-        const users: User[] = JSON.parse(storedUsers);
+        const users: UserType[] = JSON.parse(storedUsers);
         const foundUser = users.find((u) => u.user === user);
 
         if (!foundUser) {

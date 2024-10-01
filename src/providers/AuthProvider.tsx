@@ -1,15 +1,17 @@
 import { useReducer, ReactNode } from "react";
-import AuthContext, { User } from "../context/AuthContext";
+import AuthContext from "../context/AuthContext";
+import { UserType } from "../types/types";
 import { authReducer, initialAuthState } from "../reducers/authReducer";
+import { lsKeys } from "../utils/lskeys";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
 
-  const signup = (newUser: User) => {
-    const storedUsers = localStorage.getItem("users");
+  const signup = (newUser: UserType) => {
+    const storedUsers = localStorage.getItem(lsKeys.USERS);
     const users = storedUsers ? JSON.parse(storedUsers) : [];
     users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
+    localStorage.setItem(lsKeys.USERS, JSON.stringify(users));
     dispatch({ type: "SIGNUP", payload: newUser });
   };
 
