@@ -17,7 +17,7 @@ const DetailsNote = ({ note }: ViewNoteProps) => {
         <Typography variant="body1" sx={{ textAlign: 'left' }}>{text}</Typography>
       </Box>
       <Box sx={{ display: 'flex', mt: 2 }}>
-        <GenericChip category={category} sizeChip="large" />
+        <GenericChip category={category} sizechip="large" />
       </Box>
     </Box>
   )

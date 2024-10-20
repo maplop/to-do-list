@@ -1,122 +1,126 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { NoteType } from "../../types/types";
-import { lsKeys } from "../../utils/lskeys";
 import { useNotification } from "../../hooks/useNotification";
 import { categoryMap } from "../../data/categories";
 import { SelectChangeEvent } from "@mui/material";
+import { useNoteContext } from "../../hooks/useNotes";
+import { v4 as uuidv4 } from "uuid";
 
 const useNotesView = () => {
   const { user } = useAuth();
   const { notify } = useNotification();
+  const { state, dispatch } = useNoteContext();
 
-  const [openModalNewNote, setOpenModalNewNote] = useState<boolean>(false);
-  const [notes, setNotes] = useState<NoteType[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [shouldReloadNotes, setShouldReloadNotes] = useState<boolean>(false);
+  const notes = state.notes;
+
+  const [openNoteFormModal, setOpenNoteFormModal] = useState<boolean>(false);
 
   const categories = Object.keys(categoryMap);
   const [category, setCategory] = useState<string>(categories[0]);
   const [note, setNote] = useState<NoteType>({
-    id: Date.now(),
+    id: "",
     title: "",
     text: "",
     category: categories[0],
-    user: user?.name || "",
+    user: user?.user || "",
   });
 
-  const getNotes = () => {
-    setIsLoading(true);
-    const storedNotes = localStorage.getItem(lsKeys.NOTES);
-    if (storedNotes) {
-      const notesArray: NoteType[] = JSON.parse(storedNotes);
-      const userNotes = notesArray
-        .filter((note) => note.user === user?.name)
-        .reverse();
-      setNotes(userNotes);
-    }
-    setIsLoading(false);
-  };
+  // Memoize function to handle category changes
+  const handleCategoryChange = useCallback(
+    (event: SelectChangeEvent) => {
+      const selectedCategory = categories.find(
+        (category) => category === event.target.value
+      );
+      if (selectedCategory) {
+        setCategory(event.target.value as string);
+        setNote((prevNote) => ({ ...prevNote, category: selectedCategory }));
+      }
+    },
+    [categories]
+  ); // Solo se recrea si las categorías cambian
 
-  const handleCategoryChange = (event: SelectChangeEvent) => {
-    const selectedCategory = categories.find(
-      (category) => category === event.target.value
-    );
-    if (selectedCategory) {
-      setCategory(event.target.value as string);
-      setNote({ ...note, category: selectedCategory });
-    }
-  };
+  // Memoize function to handle input changes
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setNote((prevNote) => ({
+        ...prevNote,
+        [name]: value,
+      }));
+    },
+    []
+  ); // Esta función no depende de nada más
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  // Function to reset the form
+  const resetForm = useCallback(() => {
     setNote({
-      ...note,
-      [name]: value,
-    });
-  };
-
-  const saveNoteToLocalStorage = (newNote: NoteType) => {
-    const storedNotes = localStorage.getItem(lsKeys.NOTES);
-    const notesArray = storedNotes ? JSON.parse(storedNotes) : [];
-    const updatedNotes = [...notesArray, newNote];
-    localStorage.setItem(lsKeys.NOTES, JSON.stringify(updatedNotes));
-  };
-
-  const resetForm = () => {
-    setNote({
-      id: Date.now(),
+      id: "",
       title: "",
       text: "",
       category: categories[0],
-      user: user?.name || "",
+      user: user?.user || "",
     });
-  };
+    setCategory(categories[0]);
+  }, [categories, user]); // Cambia si cambian las categorías o el usuario
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  // Function to handle editing a note
+  const handleEditNote = useCallback((noteToEdit: NoteType) => {
+    setNote(noteToEdit);
+    setOpenNoteFormModal(true);
+  }, []);
 
-    const newNote = { ...note, id: Date.now() };
-    saveNoteToLocalStorage(newNote);
+  // Memoized function for submitting notes
+  const handleSubmit = useCallback(
+    (event: React.FormEvent) => {
+      event.preventDefault();
 
-    setTimeout(() => {
-      setOpenModalNewNote(false);
+      if (state.notes.some((n) => n.id === note.id)) {
+        dispatch({ type: "EDIT", payload: note });
+        notify("success", "Note updated successfully");
+      } else {
+        const newNote = { ...note, id: uuidv4() };
+        dispatch({ type: "ADD", payload: newNote });
+        notify("success", "Successfully created note");
+      }
+
+      setOpenNoteFormModal(false);
       resetForm();
-      notify("success", "Successfully created note");
-      setShouldReloadNotes(true);
-    }, 700);
-  };
+    },
+    [dispatch, notify, note, state.notes, resetForm]
+  ); // Cambia si cambian el dispatch, notify, note o las notas
 
-  const handleDeleteNote = (noteId: number) => {
-    const storedNotes = localStorage.getItem(lsKeys.NOTES);
-    if (storedNotes) {
-      const notesArray: NoteType[] = JSON.parse(storedNotes);
-      const updatedNotes = notesArray.filter((note) => note.id !== noteId);
-      localStorage.setItem(lsKeys.NOTES, JSON.stringify(updatedNotes));
-
-      setShouldReloadNotes(true);
+  // Function to handle deleting a note
+  const handleDeleteNote = useCallback(
+    (noteId: string) => {
+      dispatch({
+        type: "DELETE",
+        payload: { id: noteId, user: user?.user || "" },
+      });
       notify("success", "Note deleted successfully");
-    }
-  };
+    },
+    [dispatch, notify, user]
+  );
 
-  useEffect(() => {
-    if (user) {
-      getNotes();
-      setShouldReloadNotes(false);
-    }
-  }, [user, shouldReloadNotes]);
+  // Function to close the note form modal
+  const handleCloseNoteFormModal = useCallback(() => {
+    setOpenNoteFormModal(false);
+    resetForm();
+  }, [resetForm]);
 
   return {
-    openModalNewNote,
-    setOpenModalNewNote,
+    openNoteFormModal,
+    setOpenNoteFormModal,
+    handleCloseNoteFormModal,
     notes,
-    isLoading,
     category,
     note,
+    handleEditNote,
     handleCategoryChange,
     handleInputChange,
     handleSubmit,
     handleDeleteNote,
   };
 };
+
 export default useNotesView;

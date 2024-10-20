@@ -15,7 +15,7 @@ export type CategoryType = {
 };
 
 export type NoteType = {
-  id: number;
+  id: string;
   title: string;
   text: string;
   category: string;

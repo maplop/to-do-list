@@ -1,6 +1,12 @@
 import NotesView from "../components/notes/NotesView"
+import NoteProvider from "../providers/NotesProviders"
 
 const NotesPage = () => {
-  return <NotesView />
+  return (
+    <NoteProvider>
+      <NotesView />
+    </NoteProvider>
+
+  )
 }
 export default NotesPage
