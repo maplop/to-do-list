@@ -1,13 +1,10 @@
-import React, { createContext } from "react";
+import { createContext, Dispatch } from "react";
 import { NoteType } from "../types/types";
 import { NoteAction } from "../reducers/notesReducer";
 
-interface NoteContextType {
-  state: {
-    notes: NoteType[];
-    selectedNote?: NoteType;
-  };
-  dispatch: React.Dispatch<NoteAction>;
+interface NoteContextProps {
+  state: { notes: NoteType[] };
+  dispatch: Dispatch<NoteAction>;
 }
 
-export const NoteContext = createContext<NoteContextType | undefined>(undefined);
+export const NoteContext = createContext<NoteContextProps | undefined>(undefined);

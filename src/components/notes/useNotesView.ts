@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { NoteType } from "../../types/types";
 import { useNotification } from "../../hooks/useNotification";
@@ -26,31 +26,34 @@ const useNotesView = () => {
     user: user?.user || "",
   });
 
-  useEffect(() => {
-    if (user?.user && state.notes.length === 0) {
-      dispatch({ type: "LIST", payload: user.user });
-    }
-  }, [user]);
+  // Memoize function to handle category changes
+  const handleCategoryChange = useCallback(
+    (event: SelectChangeEvent) => {
+      const selectedCategory = categories.find(
+        (category) => category === event.target.value
+      );
+      if (selectedCategory) {
+        setCategory(event.target.value as string);
+        setNote((prevNote) => ({ ...prevNote, category: selectedCategory }));
+      }
+    },
+    [categories]
+  ); // Solo se recrea si las categorías cambian
 
-  const handleCategoryChange = (event: SelectChangeEvent) => {
-    const selectedCategory = categories.find(
-      (category) => category === event.target.value
-    );
-    if (selectedCategory) {
-      setCategory(event.target.value as string);
-      setNote({ ...note, category: selectedCategory });
-    }
-  };
+  // Memoize function to handle input changes
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setNote((prevNote) => ({
+        ...prevNote,
+        [name]: value,
+      }));
+    },
+    []
+  ); // Esta función no depende de nada más
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setNote({
-      ...note,
-      [name]: value,
-    });
-  };
-
-  const resetForm = () => {
+  // Function to reset the form
+  const resetForm = useCallback(() => {
     setNote({
       id: "",
       title: "",
@@ -59,48 +62,51 @@ const useNotesView = () => {
       user: user?.user || "",
     });
     setCategory(categories[0]);
-  };
+  }, [categories, user]); // Cambia si cambian las categorías o el usuario
 
-  const handleEditNote = (noteToEdit: NoteType) => {
+  // Function to handle editing a note
+  const handleEditNote = useCallback((noteToEdit: NoteType) => {
     setNote(noteToEdit);
     setOpenNoteFormModal(true);
-  };
+  }, []);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  // Memoized function for submitting notes
+  const handleSubmit = useCallback(
+    (event: React.FormEvent) => {
+      event.preventDefault();
 
-    if (!note.title.trim() || !note.text.trim()) {
-      notify("error", "Title and text are required.");
-      return;
-    }
+      if (state.notes.some((n) => n.id === note.id)) {
+        dispatch({ type: "EDIT", payload: note });
+        notify("success", "Note updated successfully");
+      } else {
+        const newNote = { ...note, id: uuidv4() };
+        dispatch({ type: "ADD", payload: newNote });
+        notify("success", "Successfully created note");
+      }
 
-    if (state.notes.some((n) => n.id === note.id)) {
-      console.log("Editando nota");
-      dispatch({ type: "EDIT", payload: note });
-      notify("success", "Note updated successfully");
-    } else {
-      console.log("Creando nota");
-      const newNote = { ...note, id: uuidv4() };
-      dispatch({ type: "ADD", payload: newNote });
-      notify("success", "Successfully created note");
-    }
+      setOpenNoteFormModal(false);
+      resetForm();
+    },
+    [dispatch, notify, note, state.notes, resetForm]
+  ); // Cambia si cambian el dispatch, notify, note o las notas
 
+  // Function to handle deleting a note
+  const handleDeleteNote = useCallback(
+    (noteId: string) => {
+      dispatch({
+        type: "DELETE",
+        payload: { id: noteId, user: user?.user || "" },
+      });
+      notify("success", "Note deleted successfully");
+    },
+    [dispatch, notify, user]
+  );
+
+  // Function to close the note form modal
+  const handleCloseNoteFormModal = useCallback(() => {
     setOpenNoteFormModal(false);
     resetForm();
-  };
-
-  const handleDeleteNote = (noteId: string) => {
-    dispatch({
-      type: "DELETE",
-      payload: { id: noteId, user: user?.user || "" },
-    });
-    notify("success", "Note deleted successfully");
-  };
-
-  const handleCloseNoteFormModal = () => {
-    setOpenNoteFormModal(false);
-    resetForm();
-  };
+  }, [resetForm]);
 
   return {
     openNoteFormModal,
@@ -116,4 +122,5 @@ const useNotesView = () => {
     handleDeleteNote,
   };
 };
+
 export default useNotesView;

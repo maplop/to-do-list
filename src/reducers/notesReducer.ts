@@ -3,69 +3,77 @@ import { lsKeys } from "../utils/lskeys";
 
 interface NoteState {
   notes: NoteType[];
-  selectedNote?: NoteType;
 }
 
-export const initialNoteState: NoteState = {
-  notes: JSON.parse(localStorage.getItem(lsKeys.NOTES) || "[]"),
-  selectedNote: undefined,
+export const initialNoteState = (currentUser: string): NoteState => {
+  const allNotes: NoteType[] = JSON.parse(
+    localStorage.getItem(lsKeys.NOTES) || "[]"
+  );
+
+  // Filtrar por el usuario actual
+  const userNotes = allNotes.filter(
+    (note: NoteType) => note.user === currentUser
+  );
+
+  // Eliminar duplicados basados en el 'id'
+  const uniqueNotes = Array.from(
+    new Map(userNotes.map((note) => [note.id, note])).values()
+  );
+
+  return {
+    notes: uniqueNotes,
+  };
 };
 
 export type NoteAction =
-  | { type: "LIST"; payload: string }
   | { type: "ADD"; payload: NoteType }
   | { type: "EDIT"; payload: NoteType }
   | { type: "DELETE"; payload: { id: string; user: string } };
 
-const getUserNotes = (user: string): NoteType[] => {
-  const allNotes = JSON.parse(localStorage.getItem(lsKeys.NOTES) || "{}");
-  return allNotes[user] || [];
-};
-
-const setUserNotes = (user: string, notes: NoteType[]): void => {
-  console.log("Estoy instertando");
-  const allNotes = JSON.parse(localStorage.getItem(lsKeys.NOTES) || "{}");
-  allNotes[user] = notes;
-  localStorage.setItem(lsKeys.NOTES, JSON.stringify(allNotes));
+const saveNotesToStorage = (notes: NoteType[]) => {
+  localStorage.setItem(lsKeys.NOTES, JSON.stringify(notes));
 };
 
 export const noteReducer = (
   state: NoteState,
   action: NoteAction
 ): NoteState => {
-  let updatedNotes;
-
   switch (action.type) {
-    case "LIST": {
-      const user = action.payload;
-      const userNotes = getUserNotes(user);
-      return {
-        ...state,
-        notes: userNotes,
-      };
-    }
     case "ADD": {
-      const { user } = action.payload;
-      console.log("El user de add --- ", user);
-      updatedNotes = [action.payload, ...getUserNotes(user)];
-      setUserNotes(user, updatedNotes);
-      return { ...state, notes: updatedNotes };
+      const newNotesAdd = [action.payload, ...state.notes];
+      saveNotesToStorage([
+        ...JSON.parse(localStorage.getItem(lsKeys.NOTES) || "[]"),
+        action.payload,
+      ]);
+      return { ...state, notes: newNotesAdd };
     }
 
     case "EDIT": {
-      const { user } = action.payload;
-      updatedNotes = getUserNotes(user).map((note) =>
+      const allNotes = JSON.parse(localStorage.getItem(lsKeys.NOTES) || "[]");
+      const newNotesEdit = state.notes.map((note) =>
         note.id === action.payload.id ? action.payload : note
       );
-      setUserNotes(user, updatedNotes);
-      return { ...state, notes: updatedNotes };
+      saveNotesToStorage(
+        allNotes.map((note: NoteType) =>
+          note.id === action.payload.id ? action.payload : note
+        )
+      );
+      return { ...state, notes: newNotesEdit };
     }
 
     case "DELETE": {
-      const { id, user } = action.payload;
-      updatedNotes = getUserNotes(user).filter((note) => note.id !== id);
-      setUserNotes(user, updatedNotes);
-      return { ...state, notes: updatedNotes };
+      const allNotes = JSON.parse(localStorage.getItem(lsKeys.NOTES) || "[]");
+      const newNotesDelete = state.notes.filter(
+        (note) =>
+          note.id !== action.payload.id || note.user !== action.payload.user
+      );
+      saveNotesToStorage(
+        allNotes.filter(
+          (note: NoteType) =>
+            note.id !== action.payload.id || note.user !== action.payload.user
+        )
+      );
+      return { ...state, notes: newNotesDelete };
     }
 
     default:

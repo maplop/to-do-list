@@ -39,6 +39,7 @@ const NoteForm = ({ note, handleCategoryChange, handleInputChange, handleSubmit,
               onChange={handleInputChange}
               variant="outlined"
               fullWidth
+              required
               size='small'
             />
           </Grid>
@@ -71,6 +72,7 @@ const NoteForm = ({ note, handleCategoryChange, handleInputChange, handleSubmit,
               onChange={handleInputChange}
               multiline
               fullWidth
+              required
               rows={4}
             />
           </Grid>

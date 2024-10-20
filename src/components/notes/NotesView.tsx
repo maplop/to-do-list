@@ -74,7 +74,7 @@ const NotesView = () => {
             handleCategoryChange={handleCategoryChange}
             handleInputChange={handleInputChange}
             handleSubmit={handleSubmit}
-            handleClose={() => setOpenNoteFormModal(false)} />
+            handleClose={handleCloseNoteFormModal} />
         </GenericModal>}
     </Stack >
   )
