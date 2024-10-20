@@ -1,7 +1,7 @@
-import { User } from "../context/AuthContext";
+import { UserType } from "../types/types";
 
 interface AuthState {
-  user: User | null;
+  user: UserType | null;
   isAuthenticated: boolean;
 }
 
@@ -11,7 +11,7 @@ export const initialAuthState: AuthState = {
 };
 
 export type AuthAction =
-  | { type: "SIGNUP"; payload: User }
+  | { type: "SIGNUP"; payload: UserType }
   | { type: "LOGIN"; payload: { user: string; password: string } }
   | { type: "LOGOUT" };
 
@@ -23,7 +23,7 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
       const { user, password } = action.payload;
       const storedUsers = localStorage.getItem("users");
       if (storedUsers) {
-        const users: User[] = JSON.parse(storedUsers);
+        const users: UserType[] = JSON.parse(storedUsers);
         const foundUser = users.find(
           (u) => u.user === user && u.password === password
         );

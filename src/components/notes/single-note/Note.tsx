@@ -7,7 +7,6 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import GenericChip from "../../common/GenericChip";
 import { grey } from "@mui/material/colors";
 import GenericModal from "../../common/modal/GenericModal";
-import EditNote from "../edit-note/EditNote";
 import DetailsNote from "../details-note/DetailsNote";
 import useNote from "./useNote";
 import DeleteConfirmDialog from "../../common/DeleteConfirmDialog";
@@ -15,24 +14,23 @@ import { NoteType } from "../../../types/types";
 
 interface NoteProps {
   note: NoteType,
-  handleDeleteNote: (noteId: number) => void
+  handleDeleteNote: (noteId: string) => void,
+  handleEditNote: (note: NoteType) => void,
 }
 
-const Note = ({ note, handleDeleteNote }: NoteProps) => {
+const Note = ({ note, handleDeleteNote, handleEditNote }: NoteProps) => {
 
   const {
-    openModal,
-    handleOpenModal,
-    handleCloseModal,
+    showDetails,
+    setShowDetails,
     openDeleteDialog,
     setOpenDeleteDialog,
-    selectedAction
   } = useNote()
 
   const actions = [
     { icon: <DeleteIcon fontSize="small" />, name: 'Delete', action: () => setOpenDeleteDialog(true) },
-    { icon: <ModeEditIcon fontSize="small" />, name: 'Edit', action: () => handleOpenModal('edit') },
-    { icon: <RemoveRedEyeIcon fontSize="small" />, name: 'Details', action: () => handleOpenModal('details') },
+    { icon: <ModeEditIcon fontSize="small" />, name: 'Edit', action: () => handleEditNote(note) },
+    { icon: <RemoveRedEyeIcon fontSize="small" />, name: 'Details', action: () => setShowDetails(true) },
   ];
 
   return (
@@ -76,11 +74,8 @@ const Note = ({ note, handleDeleteNote }: NoteProps) => {
           </Stack>
         </Stack>
       </Paper>
-      <GenericModal open={openModal} handleClose={handleCloseModal}>
-        <>
-          {selectedAction === "edit" && <EditNote />}
-          {selectedAction === "details" && <DetailsNote note={note} />}
-        </>
+      <GenericModal open={showDetails} handleClose={() => setShowDetails(false)}>
+        <DetailsNote note={note} />
       </GenericModal>
       <DeleteConfirmDialog
         title="Are you sure you want to delete this note?"

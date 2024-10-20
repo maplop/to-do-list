@@ -1,42 +1,36 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { NoteType } from "../../types/types";
-import { lsKeys } from "../../utils/lskeys";
 import { useNotification } from "../../hooks/useNotification";
 import { categoryMap } from "../../data/categories";
 import { SelectChangeEvent } from "@mui/material";
+import { useNoteContext } from "../../hooks/useNotes";
+import { v4 as uuidv4 } from "uuid";
 
 const useNotesView = () => {
   const { user } = useAuth();
   const { notify } = useNotification();
+  const { state, dispatch } = useNoteContext();
 
-  const [openModalNewNote, setOpenModalNewNote] = useState<boolean>(false);
-  const [notes, setNotes] = useState<NoteType[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [shouldReloadNotes, setShouldReloadNotes] = useState<boolean>(false);
+  const notes = state.notes;
+
+  const [openNoteFormModal, setOpenNoteFormModal] = useState<boolean>(false);
 
   const categories = Object.keys(categoryMap);
   const [category, setCategory] = useState<string>(categories[0]);
   const [note, setNote] = useState<NoteType>({
-    id: Date.now(),
+    id: "",
     title: "",
     text: "",
     category: categories[0],
-    user: user?.name || "",
+    user: user?.user || "",
   });
 
-  const getNotes = () => {
-    setIsLoading(true);
-    const storedNotes = localStorage.getItem(lsKeys.NOTES);
-    if (storedNotes) {
-      const notesArray: NoteType[] = JSON.parse(storedNotes);
-      const userNotes = notesArray
-        .filter((note) => note.user === user?.name)
-        .reverse();
-      setNotes(userNotes);
+  useEffect(() => {
+    if (user?.user && state.notes.length === 0) {
+      dispatch({ type: "LIST", payload: user.user });
     }
-    setIsLoading(false);
-  };
+  }, [user]);
 
   const handleCategoryChange = (event: SelectChangeEvent) => {
     const selectedCategory = categories.find(
@@ -56,63 +50,66 @@ const useNotesView = () => {
     });
   };
 
-  const saveNoteToLocalStorage = (newNote: NoteType) => {
-    const storedNotes = localStorage.getItem(lsKeys.NOTES);
-    const notesArray = storedNotes ? JSON.parse(storedNotes) : [];
-    const updatedNotes = [...notesArray, newNote];
-    localStorage.setItem(lsKeys.NOTES, JSON.stringify(updatedNotes));
-  };
-
   const resetForm = () => {
     setNote({
-      id: Date.now(),
+      id: "",
       title: "",
       text: "",
       category: categories[0],
-      user: user?.name || "",
+      user: user?.user || "",
     });
+    setCategory(categories[0]);
+  };
+
+  const handleEditNote = (noteToEdit: NoteType) => {
+    setNote(noteToEdit);
+    setOpenNoteFormModal(true);
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const newNote = { ...note, id: Date.now() };
-    saveNoteToLocalStorage(newNote);
+    if (!note.title.trim() || !note.text.trim()) {
+      notify("error", "Title and text are required.");
+      return;
+    }
 
-    setTimeout(() => {
-      setOpenModalNewNote(false);
-      resetForm();
+    if (state.notes.some((n) => n.id === note.id)) {
+      console.log("Editando nota");
+      dispatch({ type: "EDIT", payload: note });
+      notify("success", "Note updated successfully");
+    } else {
+      console.log("Creando nota");
+      const newNote = { ...note, id: uuidv4() };
+      dispatch({ type: "ADD", payload: newNote });
       notify("success", "Successfully created note");
-      setShouldReloadNotes(true);
-    }, 700);
+    }
+
+    setOpenNoteFormModal(false);
+    resetForm();
   };
 
-  const handleDeleteNote = (noteId: number) => {
-    const storedNotes = localStorage.getItem(lsKeys.NOTES);
-    if (storedNotes) {
-      const notesArray: NoteType[] = JSON.parse(storedNotes);
-      const updatedNotes = notesArray.filter((note) => note.id !== noteId);
-      localStorage.setItem(lsKeys.NOTES, JSON.stringify(updatedNotes));
-
-      setShouldReloadNotes(true);
-      notify("success", "Note deleted successfully");
-    }
+  const handleDeleteNote = (noteId: string) => {
+    dispatch({
+      type: "DELETE",
+      payload: { id: noteId, user: user?.user || "" },
+    });
+    notify("success", "Note deleted successfully");
   };
 
-  useEffect(() => {
-    if (user) {
-      getNotes();
-      setShouldReloadNotes(false);
-    }
-  }, [user, shouldReloadNotes]);
+  const handleCloseNoteFormModal = () => {
+    setOpenNoteFormModal(false);
+    resetForm();
+  };
 
   return {
-    openModalNewNote,
-    setOpenModalNewNote,
+    openNoteFormModal,
+    setOpenNoteFormModal,
+    handleCloseNoteFormModal,
     notes,
-    isLoading,
     category,
     note,
+    handleEditNote,
     handleCategoryChange,
     handleInputChange,
     handleSubmit,
