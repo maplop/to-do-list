@@ -23,12 +23,22 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: "LOGOUT" });
   };
 
+  const editUser = (updatedUser: Omit<UserType, 'id'>) => {
+    dispatch({ type: "EDIT_USER", payload: updatedUser });
+  };
+
+  const changePassword = (newPassword: string) => {
+    dispatch({ type: "CHANGE_PASSWORD", payload: { newPassword } });
+  };
+
   const value = {
     user: state.user,
     isAuthenticated: state.isAuthenticated,
     signup,
     login,
     logout,
+    editUser,
+    changePassword
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

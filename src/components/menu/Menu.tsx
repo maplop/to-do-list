@@ -1,4 +1,4 @@
-import { MenuList, Paper, ListItemIcon, MenuItem, ListItemText, Divider, Stack, Box, Typography, Tooltip, IconButton } from "@mui/material"
+import { MenuList, Paper, ListItemIcon, MenuItem, ListItemText, Divider, Stack, Box, Typography, Tooltip, IconButton, Avatar } from "@mui/material"
 import { Description, Category, AccountCircle, PowerSettingsNew } from "@mui/icons-material"
 import { Link } from "react-router-dom"
 import { SvgIconComponent } from '@mui/icons-material';
@@ -58,7 +58,11 @@ const Menu = () => {
           <Divider />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, py: 1 }}>
             <Stack direction='row' alignItems='center' spacing={1}>
-              <AccountCircle fontSize="large" color="action" />
+              <Avatar
+                src={user?.avatar}
+                alt="Vista previa"
+                sx={{ width: 36, height: 36 }}
+              />
               <Typography variant="body2">{user?.user}</Typography>
             </Stack>
             <Tooltip title="Log out">

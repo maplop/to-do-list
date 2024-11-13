@@ -1,9 +1,9 @@
-import { Box, Stack, IconButton, styled, Tooltip, Typography } from "@mui/material"
+import { Box, Stack, IconButton, styled, Tooltip, Typography, Divider } from "@mui/material"
 import AddIcon from '@mui/icons-material/Add';
 import PageTitle from "../common/PageTitle"
 import Note from "./single-note/Note";
 import Grid from '@mui/material/Grid2';
-import GenericModal from "../common/modal/GenericModal";
+import GenericModal from "../common/GenericModal";
 import NoteForm from "./note-form/NoteForm";
 import useNotesView from "./useNotesView";
 import { grey } from "@mui/material/colors";
@@ -42,6 +42,7 @@ const NotesView = () => {
           </Tooltip>
         </Box>
       </Stack>
+      <Divider sx={{ mb: 2 }} />
       <Grid container spacing={1}>
         {notes.length > 0 ? (
           notes.map((note) => (

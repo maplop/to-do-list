@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from '../layout/Layout'
 import Notes from '../pages/NotesPage'
-import Profile from '../pages/Profile'
-import Categories from '../pages/Categories'
+import Profile from '../pages/ProfilePage'
+import Categories from '../pages/CategoriesPage'
 
 const PrivateRoutes = () => {
   return (

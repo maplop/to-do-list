@@ -1,12 +1,12 @@
 import { VisibilityOff, Visibility } from "@mui/icons-material"
 import Grid from '@mui/material/Grid2';
-import { Paper, Box, Typography, TextField, FormControl, InputLabel, Input, InputAdornment, IconButton, Button } from "@mui/material"
+import { Paper, Box, Typography, TextField, FormControl, InputLabel, Input, InputAdornment, IconButton, Button, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material"
 import { Link } from "react-router-dom"
 import { useSignup } from "./useSignup";
 
 const SignupView = () => {
 
-  const { formValues, handleInputChange, passwordVisibility, changePasswordVisibility, handleSubmit } = useSignup()
+  const { formValues, handleInputChange, passwordVisibility, changePasswordVisibility, handleGenderChange, handleSubmit } = useSignup()
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -82,11 +82,27 @@ const SignupView = () => {
                 />
               </FormControl>
             </Grid>
+            <Grid size={12}>
+              <FormControl fullWidth>
+                <FormLabel id="demo-row-radio-buttons-group-label" sx={{ textAlign: 'left', fontWeight: 600 }}>Gender</FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="gender"
+                  value={formValues.gender}
+                  onChange={handleGenderChange}
+                >
+                  <FormControlLabel value="female" control={<Radio size="small" />} label="Female" />
+                  <FormControlLabel value="male" control={<Radio size="small" />} label="Male" />
+                  <FormControlLabel value="other" control={<Radio size="small" />} label="Other" />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
 
             <Grid size={12}>
               <Button variant="contained" type="submit" sx={{ width: '50%' }} onClick={handleSubmit} >Sign up</Button>
             </Grid>
-            <Grid size={12} >
+            <Grid size={12}>
               <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }} >
                 <Typography variant="body2" color="primary" sx={{ textDecoration: "underline" }} >
                   Already have an account? Log in
