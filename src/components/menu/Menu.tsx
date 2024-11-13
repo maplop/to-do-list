@@ -36,10 +36,10 @@ const Menu = () => {
     <Paper elevation={2}>
       <Stack sx={{ width: 320, maxWidth: '100%' }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, width: '100%', height: 50 }}>
-          <Box sx={{ width: 34, height: 34, display: 'flex', borderRadius: 50, overflow: 'hidden' }}>
-            <img src="/to-do-list.webp" alt="logo" />
+          <Box sx={{ width: 34, height: 34, display: 'flex', }}>
+            <img src="/sticky-note.png" alt="logo" />
           </Box>
-          <Typography variant="h5" color="primary" sx={{ fontSize: 28, fontWeight: 700 }}>To Do List</Typography>
+          <Typography variant="h5" color="primary" sx={{ fontSize: 28, fontWeight: 700 }}>Note Space</Typography>
         </Box>
         <Divider />
         <MenuList>

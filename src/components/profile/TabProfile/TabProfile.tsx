@@ -49,7 +49,7 @@ interface TabProfileProps {
 const TabProfile = ({ formValues, handleChange, handleSave, passwordValues, handleInputPasswordChange, handleChangePassword }: TabProfileProps) => {
   const [value, setValue] = React.useState(0);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
