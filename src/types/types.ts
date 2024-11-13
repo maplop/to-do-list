@@ -1,11 +1,14 @@
 import { SvgIconProps } from "@mui/material";
 
 export type UserType = {
+  id: string;
   name: string;
   lastName: string;
   age: number;
   user: string;
   password: string;
+  gender: "male" | "female" | "other";
+  avatar: string;
 };
 
 export type CategoryType = {
@@ -15,7 +18,7 @@ export type CategoryType = {
 };
 
 export type NoteType = {
-  id: number;
+  id: string;
   title: string;
   text: string;
   category: string;

@@ -2,9 +2,9 @@ import { TextField, Stack, Box, Typography, Button, FormControl, InputLabel, Sel
 import Grid from '@mui/material/Grid2';
 import { categoryMap } from '../../../data/categories';
 import { NoteType } from '../../../types/types';
+import { useEffect, useState } from 'react';
 
-interface AddNoteProps {
-  category: string,
+interface NoteFormProps {
   note: NoteType,
   handleCategoryChange: (event: SelectChangeEvent) => void,
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -12,15 +12,22 @@ interface AddNoteProps {
   handleClose: () => void
 }
 
-const AddNote = ({ category, note, handleCategoryChange, handleInputChange, handleSubmit, handleClose }: AddNoteProps) => {
+const NoteForm = ({ note, handleCategoryChange, handleInputChange, handleSubmit, handleClose }: NoteFormProps) => {
 
   const categories = Object.keys(categoryMap)
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsEdit(!!note.title);
+  }, []);
 
   return (
     <Stack sx={{ width: 500 }} >
       <form onSubmit={handleSubmit}>
         <Box mb={2}>
-          <Typography variant='h5' color='primary' sx={{ fontWeight: 700, textAlign: 'left' }}>Add Note</Typography>
+          <Typography variant='h5' color='primary' sx={{ fontWeight: 700, textAlign: 'left' }}>
+            {isEdit ? "Edit Note" : "Add Note"}
+          </Typography>
         </Box>
         <Grid container spacing={3}>
           <Grid size={6}>
@@ -32,6 +39,7 @@ const AddNote = ({ category, note, handleCategoryChange, handleInputChange, hand
               onChange={handleInputChange}
               variant="outlined"
               fullWidth
+              required
               size='small'
             />
           </Grid>
@@ -42,7 +50,7 @@ const AddNote = ({ category, note, handleCategoryChange, handleInputChange, hand
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 label="Category"
-                value={category}
+                value={note.category}
                 name='category'
                 onChange={handleCategoryChange}
               >
@@ -64,16 +72,17 @@ const AddNote = ({ category, note, handleCategoryChange, handleInputChange, hand
               onChange={handleInputChange}
               multiline
               fullWidth
+              required
               rows={4}
             />
           </Grid>
         </Grid>
         <Box mt={2} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button variant='contained' type='submit'>Add</Button>
+          <Button variant='contained' type='submit' disabled={!note.title || !note.text}>{isEdit ? "Edit" : "Add"}</Button>
         </Box>
       </form>
     </Stack >
   )
 }
-export default AddNote
+export default NoteForm

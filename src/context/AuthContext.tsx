@@ -7,6 +7,8 @@ interface AuthContextType {
   signup: (user: UserType) => void
   login: (username: string, password: string) => void;
   logout: () => void;
+  editUser: (user: Omit<UserType, 'id'>) => void
+  changePassword: (newPassword: string) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
