@@ -1,22 +1,25 @@
 import { Chip, styled } from "@mui/material";
-import { getCategoryDetails } from "../../data/categories";
 import { ColorPaletteType } from "../../types/types";
+import { CategoryType } from "../../types/types";
+import { iconsColection } from "../../data/iconsColection";
 
 interface GenericChipProps {
-  category: string;
+  category: CategoryType;
   sizechip?: "large" | "small"
 }
 
+
+
 const GenericChip = ({ category, sizechip = "small" }: GenericChipProps) => {
 
-  const { color: categorycolor, icon: CategoryIcon } = getCategoryDetails(category)
+  const CategoryIcon = iconsColection[category.icon]
 
   return (
     <ChipCategory
-      icon={< CategoryIcon />}
-      label={category}
+      icon={<CategoryIcon />}
+      label={category.name}
       size="small"
-      categorycolor={categorycolor}
+      categorycolor={category.color}
       sizechip={sizechip}
     />
   );

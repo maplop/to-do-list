@@ -1,6 +1,10 @@
+import CategoryView from "../components/categories/CategoryView"
+
 const Categories = () => {
   return (
-    <>Hello Categories</>
+    <>
+      <CategoryView />
+    </>
   )
 }
 export default Categories

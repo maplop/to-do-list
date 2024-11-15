@@ -35,7 +35,6 @@ const ProfileView = () => {
         </Grid>
       </Grid>
     </>
-
   )
 }
 export default ProfileView
