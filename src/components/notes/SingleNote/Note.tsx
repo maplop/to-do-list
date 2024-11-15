@@ -7,7 +7,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import GenericChip from "../../common/GenericChip";
 import { grey } from "@mui/material/colors";
 import GenericModal from "../../common/GenericModal";
-import DetailsNote from "../details-note/DetailsNote";
+import DetailsNote from "../DetailsNote/DetailsNote";
 import useNote from "./useNote";
 import DeleteConfirmDialog from "../../common/DeleteConfirmDialog";
 import { NoteType } from "../../../types/types";

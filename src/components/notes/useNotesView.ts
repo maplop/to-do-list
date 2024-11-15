@@ -1,23 +1,23 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { NoteType } from "../../types/types";
+import { CategoryType, NoteType } from "../../types/types";
 import { useNotification } from "../../hooks/useNotification";
-import { categoryMap } from "../../data/categories";
 import { SelectChangeEvent } from "@mui/material";
 import { useNoteContext } from "../../hooks/useNotes";
 import { v4 as uuidv4 } from "uuid";
+import { getCategories } from "../../api/category";
+import { lsKeys } from "../../utils/lskeys";
+import { defaultCategories } from "../../data/categories";
 
 const useNotesView = () => {
   const { user } = useAuth();
   const { notify } = useNotification();
   const { state, dispatch } = useNoteContext();
-
+  const categories = getCategories();
   const notes = state.notes;
-
   const [openNoteFormModal, setOpenNoteFormModal] = useState<boolean>(false);
 
-  const categories = Object.keys(categoryMap);
-  const [category, setCategory] = useState<string>(categories[0]);
+  const [category, setCategory] = useState<string>(categories[0]?.name);
   const [note, setNote] = useState<NoteType>({
     id: "",
     title: "",
@@ -26,11 +26,25 @@ const useNotesView = () => {
     user: user?.user || "",
   });
 
-  // Memoize function to handle category changes
+  // Load categories from localStorage, or set default if empty
+  useEffect(() => {
+    const categories = JSON.parse(
+      localStorage.getItem(lsKeys.CATEGORIES) || "[]"
+    ) as CategoryType[];
+
+    if (categories.length === 0) {
+      // If no categories are stored, set default categories
+      localStorage.setItem(
+        lsKeys.CATEGORIES,
+        JSON.stringify(defaultCategories)
+      );
+    }
+  }, []);
+
   const handleCategoryChange = useCallback(
     (event: SelectChangeEvent) => {
       const selectedCategory = categories.find(
-        (category) => category === event.target.value
+        (category) => category.name === event.target.value
       );
       if (selectedCategory) {
         setCategory(event.target.value as string);
@@ -38,9 +52,8 @@ const useNotesView = () => {
       }
     },
     [categories]
-  ); // Solo se recrea si las categorías cambian
+  );
 
-  // Memoize function to handle input changes
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -50,9 +63,8 @@ const useNotesView = () => {
       }));
     },
     []
-  ); // Esta función no depende de nada más
+  );
 
-  // Function to reset the form
   const resetForm = useCallback(() => {
     setNote({
       id: "",
@@ -61,16 +73,14 @@ const useNotesView = () => {
       category: categories[0],
       user: user?.user || "",
     });
-    setCategory(categories[0]);
-  }, [categories, user]); // Cambia si cambian las categorías o el usuario
+    setCategory(categories[0]?.name);
+  }, [categories, user]);
 
-  // Function to handle editing a note
   const handleEditNote = useCallback((noteToEdit: NoteType) => {
     setNote(noteToEdit);
     setOpenNoteFormModal(true);
   }, []);
 
-  // Memoized function for submitting notes
   const handleSubmit = useCallback(
     (event: React.FormEvent) => {
       event.preventDefault();
@@ -88,9 +98,8 @@ const useNotesView = () => {
       resetForm();
     },
     [dispatch, notify, note, state.notes, resetForm]
-  ); // Cambia si cambian el dispatch, notify, note o las notas
+  );
 
-  // Function to handle deleting a note
   const handleDeleteNote = useCallback(
     (noteId: string) => {
       dispatch({
@@ -102,7 +111,6 @@ const useNotesView = () => {
     [dispatch, notify, user]
   );
 
-  // Function to close the note form modal
   const handleCloseNoteFormModal = useCallback(() => {
     setOpenNoteFormModal(false);
     resetForm();

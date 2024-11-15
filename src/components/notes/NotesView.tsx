@@ -1,10 +1,10 @@
 import { Box, Stack, IconButton, styled, Tooltip, Typography, Divider } from "@mui/material"
 import AddIcon from '@mui/icons-material/Add';
 import PageTitle from "../common/PageTitle"
-import Note from "./single-note/Note";
+import Note from "./SingleNote/Note";
 import Grid from '@mui/material/Grid2';
 import GenericModal from "../common/GenericModal";
-import NoteForm from "./note-form/NoteForm";
+import NoteForm from "./NoteForm/NoteForm";
 import useNotesView from "./useNotesView";
 import { grey } from "@mui/material/colors";
 

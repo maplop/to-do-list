@@ -7,6 +7,7 @@ interface GlobalProviderProps {
 }
 
 const GlobalProvider = ({ children }: GlobalProviderProps) => {
+
   return (
     <AuthProvider>
       <NotificationProvider>

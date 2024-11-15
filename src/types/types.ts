@@ -1,4 +1,5 @@
-import { SvgIconProps } from "@mui/material";
+import { ColorType } from "../data/colorColection";
+import { iconsColection } from "../data/iconsColection";
 
 export type UserType = {
   id: string;
@@ -13,15 +14,15 @@ export type UserType = {
 
 export type CategoryType = {
   name: string;
-  color: string;
-  icon: React.ElementType<SvgIconProps>;
+  color: ColorType;
+  icon: keyof typeof iconsColection;
 };
 
 export type NoteType = {
   id: string;
   title: string;
   text: string;
-  category: string;
+  category: CategoryType;
   user: string;
 };
 
