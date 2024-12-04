@@ -12,7 +12,6 @@ interface ProfileDataProps {
 const ProfileData = ({ formValues, handleChange, handleSave }: ProfileDataProps) => {
 
   const onSumbit = () => {
-    console.log("User --- ", formValues)
     handleSave()
   }
 

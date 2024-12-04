@@ -5,12 +5,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import { ColorType } from "../../data/colorColection";
 import { iconsColection } from "../../data/iconsColection";
 
-
 interface CategoryItemProps {
-  category: CategoryType
+  category: CategoryType,
+  handleEditCategory?: (category: CategoryType) => void
 }
 
-const CategoryItem = ({ category }: CategoryItemProps) => {
+const CategoryItem = ({ category, handleEditCategory }: CategoryItemProps) => {
 
   const CategoryIcon = iconsColection[category.icon];
 
@@ -22,7 +22,7 @@ const CategoryItem = ({ category }: CategoryItemProps) => {
       </Box>
       <WrapperActionButtons>
         <Tooltip title="Edit category" placement="top">
-          <WrapperButton>
+          <WrapperButton onClick={() => handleEditCategory && handleEditCategory(category)}>
             <EditIcon />
           </WrapperButton>
         </Tooltip>

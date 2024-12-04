@@ -13,7 +13,7 @@ const useNotesView = () => {
   const { user } = useAuth();
   const { notify } = useNotification();
   const { state, dispatch } = useNoteContext();
-  const categories = getCategories();
+  const categories = getCategories(user?.user);
   const notes = state.notes;
   const [openNoteFormModal, setOpenNoteFormModal] = useState<boolean>(false);
 
@@ -26,14 +26,12 @@ const useNotesView = () => {
     user: user?.user || "",
   });
 
-  // Load categories from localStorage, or set default if empty
   useEffect(() => {
     const categories = JSON.parse(
       localStorage.getItem(lsKeys.CATEGORIES) || "[]"
     ) as CategoryType[];
 
     if (categories.length === 0) {
-      // If no categories are stored, set default categories
       localStorage.setItem(
         lsKeys.CATEGORIES,
         JSON.stringify(defaultCategories)

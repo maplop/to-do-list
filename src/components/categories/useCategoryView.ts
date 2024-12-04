@@ -1,72 +1,90 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { colorCollection, ColorType } from "../../data/colorColection";
 import { iconsColection } from "../../data/iconsColection";
-import React from "react";
 import { CategoryType } from "../../types/types";
 import { lsKeys } from "../../utils/lskeys";
 import { useNotification } from "../../hooks/useNotification";
+import { useAuth } from "../../hooks/useAuth";
+import { v4 as uuidv4 } from "uuid";
 
 export const useCategoryVew = () => {
+  const { user } = useAuth();
   const { notify } = useNotification();
 
   const [openCategoryModal, setOpenCategoryModal] = useState<boolean>(false);
+  const [category, setCategory] = useState<CategoryType>({
+    id: "",
+    name: "",
+    color: colorCollection[0].color,
+    icon: "category",
+    user: user?.user || "",
+  });
 
-  const [categoryName, setCategoryName] = useState<string>("");
-  const [categoryColor, setCategoryColor] = useState<ColorType>(
-    colorCollection[0].color
-  );
-  const [categoryIcon, setCategoryIcon] =
-    useState<keyof typeof iconsColection>("category");
-
-  const handleCategoryName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCategoryName(event.target.value);
+  const handleCategoryNameChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { value } = event.target;
+    setCategory((prevCategory) => ({ ...prevCategory, name: value }));
   };
 
-  const handleCategoryColor = (color: ColorType) => {
-    setCategoryColor(color);
+  const handleCategoryColorChange = (color: ColorType) => {
+    setCategory((prevCategory) => ({ ...prevCategory, color: color }));
   };
 
-  const handleCategoryIcon = (iconId: keyof typeof iconsColection) => {
-    setCategoryIcon(iconId);
+  const handleCategoryIconChange = (icon: keyof typeof iconsColection) => {
+    setCategory((prevCategory) => ({ ...prevCategory, icon: icon }));
   };
 
-  const createCategory = (category: CategoryType) => {
-    const categories = JSON.parse(
-      localStorage.getItem(lsKeys.CATEGORIES) || "[]"
-    ) as CategoryType[];
+  const handleEditCategory = (category: CategoryType) => {
+    setCategory(category);
+    setOpenCategoryModal(true);
+  };
 
-    const categoryExists = categories.some(
-      (category) => category.name === categoryName
-    );
-
-    if (!categoryExists) {
-      const newCategory: CategoryType = {
-        name: category.name,
-        color: category.color,
-        icon: category.icon,
-      };
-
-      categories.push(newCategory);
+  const handleSubmit = useCallback(
+    (event: React.FormEvent) => {
+      event.preventDefault();
+      const categories = JSON.parse(
+        localStorage.getItem(lsKeys.CATEGORIES) || "[]"
+      ) as CategoryType[];
+      const categoryIndex = categories.findIndex((c) => c.id === category.id);
+      if (categoryIndex === -1) {
+        const newCategory: CategoryType = {
+          ...category,
+          id: uuidv4(),
+          user: user?.user || "",
+        };
+        categories.push(newCategory);
+        notify("success", "Category created successfully.");
+      } else {
+        categories[categoryIndex] = { ...category };
+        notify("success", "Category updated successfully.");
+      }
       localStorage.setItem(lsKeys.CATEGORIES, JSON.stringify(categories));
+      setOpenCategoryModal(false);
+      resetValue();
+    },
+    [category, notify, user]
+  );
 
-      console.log("Category created successfully", newCategory);
-      notify("success", "Category created successfully.");
-    } else {
-      console.log("NEw category --- ");
-      console.log("The category already exiist");
-      notify("error", "The category already exiist.");
-    }
+  const resetValue = () => {
+    setCategory({
+      id: "",
+      name: "",
+      color: colorCollection[0].color,
+      icon: "category",
+      user: user?.user || "",
+    });
   };
 
   return {
     openCategoryModal,
     setOpenCategoryModal,
-    categoryName,
-    handleCategoryName,
-    categoryColor,
-    handleCategoryColor,
-    categoryIcon,
-    handleCategoryIcon,
-    createCategory,
+    category,
+    handleCategoryNameChange,
+    handleCategoryColorChange,
+    handleCategoryIconChange,
+    handleEditCategory,
+    handleSubmit,
+    resetValue,
   };
 };

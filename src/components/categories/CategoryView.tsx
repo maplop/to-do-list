@@ -10,13 +10,13 @@ const CategoryView = () => {
   const {
     openCategoryModal,
     setOpenCategoryModal,
-    categoryName,
-    handleCategoryName,
-    categoryColor,
-    handleCategoryColor,
-    categoryIcon,
-    handleCategoryIcon,
-    createCategory
+    category,
+    handleCategoryNameChange,
+    handleCategoryColorChange,
+    handleCategoryIconChange,
+    handleEditCategory,
+    handleSubmit,
+    resetValue,
   } = useCategoryVew()
 
   return (
@@ -33,7 +33,10 @@ const CategoryView = () => {
         </Stack>
         <Box>
           <Tooltip title="Add Category" placement="left">
-            <IconBtn onClick={() => setOpenCategoryModal(true)}>
+            <IconBtn onClick={() => {
+              setOpenCategoryModal(true)
+              resetValue()
+            }}>
               <AddIcon />
             </IconBtn>
           </Tooltip>
@@ -41,18 +44,19 @@ const CategoryView = () => {
       </Stack>
       <Divider />
       <Box mt={2}>
-        <CategoryList />
+        <CategoryList handleEditCategory={handleEditCategory} />
       </Box>
       <NewCategory
         openModal={openCategoryModal}
-        handleClose={() => setOpenCategoryModal(false)}
-        categoryName={categoryName}
-        handleCategoryName={handleCategoryName}
-        categoryColor={categoryColor}
-        handleCategoryColor={handleCategoryColor}
-        categoryIcon={categoryIcon}
-        handleCategoryIcon={handleCategoryIcon}
-        createCategory={createCategory}
+        handleClose={() => {
+          setOpenCategoryModal(false)
+          resetValue()
+        }}
+        category={category}
+        handleCategoryNameChange={handleCategoryNameChange}
+        handleCategoryColorChange={handleCategoryColorChange}
+        handleCategoryIconChange={handleCategoryIconChange}
+        handleSubmit={handleSubmit}
       />
     </>
   )

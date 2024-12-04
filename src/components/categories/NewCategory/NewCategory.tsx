@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Button, styled, TextField, Typography } from "@mui/material"
 import GenericModal from "../../common/GenericModal"
 import { grey } from "@mui/material/colors"
@@ -14,13 +14,11 @@ import { iconsColection } from "../../../data/iconsColection"
 interface NewCategoryProps {
   openModal: boolean,
   handleClose: () => void,
-  categoryName: string,
-  handleCategoryName: (event: React.ChangeEvent<HTMLInputElement>) => void,
-  categoryColor: ColorType
-  handleCategoryColor: (color: ColorType) => void
-  categoryIcon: keyof typeof iconsColection,
-  handleCategoryIcon: (iconId: keyof typeof iconsColection) => void
-  createCategory: (category: CategoryType) => void
+  category: CategoryType,
+  handleCategoryNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleCategoryColorChange: (color: ColorType) => void
+  handleCategoryIconChange: (iconId: keyof typeof iconsColection) => void
+  handleSubmit: (event: React.FormEvent) => void,
 }
 
 
@@ -28,13 +26,11 @@ const NewCategory = (
   {
     openModal,
     handleClose,
-    categoryName,
-    handleCategoryName,
-    categoryColor,
-    handleCategoryColor,
-    categoryIcon,
-    handleCategoryIcon,
-    createCategory
+    category,
+    handleCategoryNameChange,
+    handleCategoryColorChange,
+    handleCategoryIconChange,
+    handleSubmit
   }: NewCategoryProps) => {
 
   const {
@@ -44,17 +40,20 @@ const NewCategory = (
     isOpen,
   } = useNewCategory();
 
-  const CategoryIcon = iconsColection[categoryIcon]
+  const CategoryIcon = iconsColection[category.icon]
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
-  console.log("Category name --- ", categoryName)
+  useEffect(() => {
+    setIsEdit(!!category.id);
+  }, [category.id]);
 
   return (
     <>
       <GenericModal open={openModal} handleClose={handleClose} >
-        <>
+        <form onSubmit={handleSubmit}>
           <Box mb={2}>
             <Typography variant='h5' color='primary' sx={{ fontWeight: 700, textAlign: 'left' }}>
-              Add Category
+              {isEdit ? 'Edit Category' : 'Add Category'}
             </Typography>
           </Box>
           <ModalContent>
@@ -64,57 +63,52 @@ const NewCategory = (
               fullWidth
               label="Category name"
               variant="outlined"
-              value={categoryName}
+              value={category.name}
               name="categoryName"
-              onChange={handleCategoryName}
+              onChange={handleCategoryNameChange}
             />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
               <ColorPickerWrapper>
-                <WrapperIcon color={categoryColor} onClick={(e) => openPopover(e, 'icon')}>
+                <WrapperIcon color={category.color} onClick={(e) => openPopover(e, 'icon')}>
                   <CategoryIcon />
                 </WrapperIcon>
                 <Label>category icon</Label>
               </ColorPickerWrapper>
               <ColorPickerWrapper>
                 <Box onClick={(e) => openPopover(e, 'color')}>
-                  <ColorPicker color={categoryColor} />
+                  <ColorPicker color={category.color} />
                 </Box>
                 <Label>category color</Label>
               </ColorPickerWrapper>
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <Typography sx={{ textAlign: 'left', fontSize: 14, fontWeight: 600, color: grey[600] }}>Preview</Typography>
-              <CategoryItem category={{ name: categoryName, color: categoryColor, icon: categoryIcon }} />
+              <CategoryItem category={category} />
             </Box>
             <Box mt={1} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
               <Button onClick={handleClose}>Cancel</Button>
               <Button
                 variant='contained'
                 type='submit'
-                onClick={() => createCategory(
-                  {
-                    name: categoryName,
-                    color: categoryColor,
-                    icon: categoryIcon
-                  }
-                )} >
-                Add
+                disabled={!category.name}
+              >
+                {isEdit ? 'Edit' : 'Add'}
               </Button>
             </Box>
           </ModalContent>
-        </>
+        </form>
       </GenericModal>
       <GenericPopover
         open={isOpen('color')}
         anchorEl={anchorEl}
         onClose={closePopover}>
-        <ColorCollection handleCategoryColor={handleCategoryColor} closePopover={closePopover} />
+        <ColorCollection handleCategoryColor={handleCategoryColorChange} closePopover={closePopover} />
       </GenericPopover>
       <GenericPopover
         open={isOpen('icon')}
         anchorEl={anchorEl}
         onClose={closePopover}>
-        <IconCollection handleCategoryIcon={handleCategoryIcon} closePopover={closePopover} />
+        <IconCollection handleCategoryIcon={handleCategoryIconChange} closePopover={closePopover} />
       </GenericPopover>
 
     </>

@@ -13,9 +13,11 @@ export type UserType = {
 };
 
 export type CategoryType = {
+  id: string;
   name: string;
   color: ColorType;
   icon: keyof typeof iconsColection;
+  user: string;
 };
 
 export type NoteType = {
