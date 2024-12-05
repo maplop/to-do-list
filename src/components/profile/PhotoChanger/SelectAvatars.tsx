@@ -1,4 +1,4 @@
-import { Typography, Box, Button } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import GenericModal from '../../common/GenericModal';
 import WrapperAvatar from './WrapperAvatar';
@@ -33,23 +33,6 @@ const SelectAvatars = ({ open, handleClose, handleAvatarSelect }: SelectAvatarsP
             </Grid>
           ))}
         </Grid>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1, mt: 3 }}>
-          <Button variant="contained" disabled component="label" sx={{ span: { fontSize: '12px', textTransform: 'none' } }}>
-            Upload <span> (coming soon)</span>
-            <input
-              hidden
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                if (e.target.files?.[0]) {
-                  const fileUrl = URL.createObjectURL(e.target.files[0]);
-                  handleAvatarSelect(fileUrl);
-                  handleClose();
-                }
-              }}
-            />
-          </Button>
-        </Box>
       </Box>
     </GenericModal>
   );

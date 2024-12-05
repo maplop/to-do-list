@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid2';
 import { NoteType } from '../../../types/types';
 import { useEffect, useState } from 'react';
 import { getCategories } from '../../../api/category';
+import { useAuth } from '../../../hooks/useAuth';
 
 interface NoteFormProps {
   note: NoteType,
@@ -13,8 +14,8 @@ interface NoteFormProps {
 }
 
 const NoteForm = ({ note, handleCategoryChange, handleInputChange, handleSubmit, handleClose }: NoteFormProps) => {
-
-  const categories = getCategories()
+  const { user } = useAuth()
+  const categories = getCategories(user?.user)
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
   useEffect(() => {

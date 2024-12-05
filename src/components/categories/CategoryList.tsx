@@ -3,10 +3,16 @@ import CategoryItem from "./CategoryItem"
 import { getCategories } from '../../api/category';
 import { Box, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { CategoryType } from '../../types/types';
+import { useAuth } from '../../hooks/useAuth';
 
+interface CategoryListProps {
+  handleEditCategory: (category: CategoryType) => void
+}
 
-const CategoryList = () => {
-  const categories = getCategories()
+const CategoryList = ({ handleEditCategory }: CategoryListProps) => {
+  const { user } = useAuth()
+  const categories = getCategories(user?.user)
   return (
     <Grid container spacing={1}>
       {categories.length === 0 ? (
@@ -24,7 +30,7 @@ const CategoryList = () => {
       ) : (
         categories.map((category, index) => (
           <Grid size={6} key={index}>
-            <CategoryItem category={category} />
+            <CategoryItem category={category} handleEditCategory={handleEditCategory} />
           </Grid>
         ))
       )}
