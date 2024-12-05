@@ -20,7 +20,7 @@ const CategoryItem = ({ category, handleEditCategory }: CategoryItemProps) => {
         <CategoryIcon />
         <Typography sx={{ fontSize: 14, fontWeight: 600 }}>{category?.name}</Typography>
       </Box>
-      <WrapperActionButtons>
+      {category.user !== 'default' && (<WrapperActionButtons>
         <Tooltip title="Edit category" placement="top">
           <WrapperButton onClick={() => handleEditCategory && handleEditCategory(category)}>
             <EditIcon />
@@ -31,7 +31,7 @@ const CategoryItem = ({ category, handleEditCategory }: CategoryItemProps) => {
             <DeleteIcon />
           </WrapperButton>
         </Tooltip>
-      </WrapperActionButtons>
+      </WrapperActionButtons>)}
     </WrapperItem>
   )
 }

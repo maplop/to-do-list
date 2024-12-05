@@ -8,5 +8,7 @@ export const getCategories = (user: string | undefined): CategoryType[] => {
   }
 
   const allCategories = JSON.parse(categories) as CategoryType[];
-  return allCategories.filter((category) => category.user === user);
+  return allCategories.filter(
+    (category) => category.user === user || category.user === "default"
+  );
 };
