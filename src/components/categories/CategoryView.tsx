@@ -15,6 +15,7 @@ const CategoryView = () => {
     handleCategoryColorChange,
     handleCategoryIconChange,
     handleEditCategory,
+    handleDeleteCategory,
     handleSubmit,
     resetValue,
   } = useCategoryVew()
@@ -44,7 +45,7 @@ const CategoryView = () => {
       </Stack>
       <Divider />
       <Box mt={2}>
-        <CategoryList handleEditCategory={handleEditCategory} />
+        <CategoryList handleEditCategory={handleEditCategory} handleDeleteCategory={handleDeleteCategory} />
       </Box>
       <NewCategory
         openModal={openCategoryModal}

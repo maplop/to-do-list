@@ -8,9 +8,10 @@ import { useAuth } from '../../hooks/useAuth';
 
 interface CategoryListProps {
   handleEditCategory: (category: CategoryType) => void
+  handleDeleteCategory: (categoryId: string) => void
 }
 
-const CategoryList = ({ handleEditCategory }: CategoryListProps) => {
+const CategoryList = ({ handleEditCategory, handleDeleteCategory }: CategoryListProps) => {
   const { user } = useAuth()
   const categories = getCategories(user?.user)
   return (
@@ -30,7 +31,11 @@ const CategoryList = ({ handleEditCategory }: CategoryListProps) => {
       ) : (
         categories.map((category, index) => (
           <Grid size={6} key={index}>
-            <CategoryItem category={category} handleEditCategory={handleEditCategory} />
+            <CategoryItem
+              category={category}
+              handleEditCategory={handleEditCategory}
+              handleDeleteCategory={handleDeleteCategory}
+            />
           </Grid>
         ))
       )}
