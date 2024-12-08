@@ -4,35 +4,49 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { ColorType } from "../../data/colorColection";
 import { iconsColection } from "../../data/iconsColection";
+import { useState } from "react";
+import DeleteConfirmDialog from "../common/DeleteConfirmDialog";
 
 interface CategoryItemProps {
   category: CategoryType,
   handleEditCategory?: (category: CategoryType) => void
+  handleDeleteCategory: (categoryId: string) => void
 }
 
-const CategoryItem = ({ category, handleEditCategory }: CategoryItemProps) => {
-
+const CategoryItem = ({ category, handleEditCategory, handleDeleteCategory }: CategoryItemProps) => {
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false)
   const CategoryIcon = iconsColection[category.icon];
 
   return (
-    <WrapperItem color={category.color}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <CategoryIcon />
-        <Typography sx={{ fontSize: 14, fontWeight: 600 }}>{category?.name}</Typography>
-      </Box>
-      {category.user !== 'default' && (<WrapperActionButtons>
-        <Tooltip title="Edit category" placement="top">
-          <WrapperButton onClick={() => handleEditCategory && handleEditCategory(category)}>
-            <EditIcon />
-          </WrapperButton>
-        </Tooltip>
-        <Tooltip title="Delete category" placement="top">
-          <WrapperButton>
-            <DeleteIcon />
-          </WrapperButton>
-        </Tooltip>
-      </WrapperActionButtons>)}
-    </WrapperItem>
+    <>
+      <WrapperItem color={category.color}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <CategoryIcon />
+          <Typography sx={{ fontSize: 14, fontWeight: 600 }}>{category?.name}</Typography>
+        </Box>
+        {category.user !== 'default' && (<WrapperActionButtons>
+          <Tooltip title="Edit category" placement="top">
+            <WrapperButton onClick={() => handleEditCategory && handleEditCategory(category)}>
+              <EditIcon />
+            </WrapperButton>
+          </Tooltip>
+          <Tooltip title="Delete category" placement="top">
+            <WrapperButton onClick={() => setOpenDeleteDialog(true)}>
+              <DeleteIcon />
+            </WrapperButton>
+          </Tooltip>
+        </WrapperActionButtons>)
+        }
+      </WrapperItem >
+      <DeleteConfirmDialog
+        title="Are you sure you want to delete this category?"
+        message="  This action cannot be undone. Once deleted, the note will be permanently removed.
+            Do you wish to proceed with the deletion?"
+        open={openDeleteDialog}
+        handleClose={() => setOpenDeleteDialog(false)}
+        handleAction={() => handleDeleteCategory(category.id)}
+      />
+    </>
   )
 }
 export default CategoryItem

@@ -40,6 +40,27 @@ export const useCategoryVew = () => {
     setOpenCategoryModal(true);
   };
 
+  const handleDeleteCategory = useCallback(
+    (categoryId: string) => {
+      const categories = JSON.parse(
+        localStorage.getItem(lsKeys.CATEGORIES) || "[]"
+      ) as CategoryType[];
+
+      const updatedCategories = categories.filter(
+        (c) =>
+          c.id !== categoryId && (c.user === user?.user || c.user === "default")
+      );
+
+      localStorage.setItem(
+        lsKeys.CATEGORIES,
+        JSON.stringify(updatedCategories)
+      );
+
+      notify("success", "Category deleted successfully.");
+    },
+    [notify, user?.user]
+  );
+
   const handleSubmit = useCallback(
     (event: React.FormEvent) => {
       event.preventDefault();
@@ -84,6 +105,7 @@ export const useCategoryVew = () => {
     handleCategoryColorChange,
     handleCategoryIconChange,
     handleEditCategory,
+    handleDeleteCategory,
     handleSubmit,
     resetValue,
   };
