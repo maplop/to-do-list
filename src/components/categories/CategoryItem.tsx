@@ -10,7 +10,7 @@ import DeleteConfirmDialog from "../common/DeleteConfirmDialog";
 interface CategoryItemProps {
   category: CategoryType,
   handleEditCategory?: (category: CategoryType) => void
-  handleDeleteCategory: (categoryId: string) => void
+  handleDeleteCategory?: (categoryId: string) => void
 }
 
 const CategoryItem = ({ category, handleEditCategory, handleDeleteCategory }: CategoryItemProps) => {
@@ -44,7 +44,7 @@ const CategoryItem = ({ category, handleEditCategory, handleDeleteCategory }: Ca
             Do you wish to proceed with the deletion?"
         open={openDeleteDialog}
         handleClose={() => setOpenDeleteDialog(false)}
-        handleAction={() => handleDeleteCategory(category.id)}
+        handleAction={() => handleDeleteCategory && handleDeleteCategory(category.id)}
       />
     </>
   )
